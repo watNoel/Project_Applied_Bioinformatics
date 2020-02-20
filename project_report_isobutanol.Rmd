@@ -22,6 +22,15 @@ As a result we obtained 16 FASTq files corresponding to our different samples.
 
 To understand better the context of the data, the samples are divided in wild-type (WT) strains and GLN3∆ (gln3) strains. For each genotype, we get two samples growing in normal conditions (add here information about "normal conditions" from the paper) and two samples growing in 1,3% v/v isobutanol. The RNA-seq experiment was duplicated for each of the samples, meaning that from 2 different cultures grown at same conditions we get 4 duplicates. 
 
+We will also use the reference genome of S. cerevisiae to map our reads further on. To feth the reference genome, we went to the Sacharomyces Genome Database and download the same reference genome that they used for their experiment: S288C_reference_genome_R64-1-1-20110203
+
+```{bash}
+wget https://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz
+tar -xvzf S288C_reference_genome_R64-1-1_20110203.tgz #to decompress the file
+
+```
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
