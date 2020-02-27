@@ -8,7 +8,7 @@ We are aiming to reproduce the RNA-seq data processing of the paper 'Reproductio
 
 We extracted the FASTq files following the instructions provided by Filip on Canvas. 
 
-```{bash}
+```{}
 wget https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-8175/E-MTAB-8175.sdrf.txt
 
 less -S E-MTAB-8175.sdrf.txt
@@ -24,7 +24,7 @@ To understand better the context of the data, the samples are divided in wild-ty
 
 We will also use the reference genome of S. cerevisiae to map our reads further on. To feth the reference genome, we went to the Sacharomyces Genome Database and download the same reference genome that they used for their experiment: S288C_reference_genome_R64-1-1-20110203
 
-```{bash}
+```{}
 wget https://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz
 tar -xvzf S288C_reference_genome_R64-1-1_20110203.tgz #to decompress the file
 
@@ -32,10 +32,14 @@ tar -xvzf S288C_reference_genome_R64-1-1_20110203.tgz #to decompress the file
 
 We will start by trying to align the reads to the reference genome that we downloaded. The alignment is made using TopHats. TopHats we will map the reads to the gene reference genome using the tool bowtie. However, to use the reference genome TopHats need an index for the reference genome. Therefore, we will first create this index by using bowtie2-build. 
 
-```{bash}
+```{}
 bowtie2-build -f S288C_reference_sequence_R64-1-1_20110203.fsa bowtie_index/reference_genome
 ```
+We allign the RNA-seq to the the S288C reference genome using tophat (version 2.0.13).  Using the following command: 
 
+```{}
+tophat -o alignment/dgln31 /reference_genome/bowtie_index/S288C raw_data/fasta_file_names/dgln31_1.fastq.gz raw_data/fasta_file_names/dgln31_2.fastq.gz
+```
 
 
 
