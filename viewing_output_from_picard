@@ -1,9 +1,0 @@
-after running the following script to get the marked duplicates, 
- MarkDuplicates I=./alignment/dgln31/accepted_hits.bam O=./alignment/dgln31/marked_duplicates_dgln31.bam M=./alignment/dgln31/marked_dup_metrics.txt
-samtools view *dgln31.bam | grep "1024" | less -S
-
-this gives 12700, very very small!
-samtools view -f 1024 *dgln31.bam | less -S
-
-the latter seems like a more reasonable one!
-Here we get the output 3779981
