@@ -1,0 +1,19 @@
+after running the following script to get the marked duplicates, 
+ MarkDuplicates I=./alignment/dgln31/accepted_hits.bam O=./alignment/dgln31/marked_duplicates_dgln31.bam M=./alignment/dgln31/marked_dup_metrics.txt
+samtools view *dgln31.bam | grep "1024" | less -S
+
+this gives 12700, very very small!
+samtools view -f 1024 *dgln31.bam | less -S
+
+the latter seems like a more reasonable one!
+Here we get the output 3779981
+
+when the correct output file has been created from MarkDuplicates, (note we maybe should do some sorting and stuff before and edit a flag corresponding to remove_dubplicates)
+
+I ran this command to quantify abundance of all genes in the reference genome!
+ "cufflinks -g ../../S288C_reference_genome_R64-1-1_20110203/saccharomyces_cerevisiae_R64-1-1_20110208.gff marked_duplicates_dgln31.bam -o test_cufflinks"
+
+note that the output name test_cufflinks is not particularily clever, and also note that it is stored in the same directory as the marked duplicates but in a one step deeper folder!
+
+" reading on the internet, it might be suitable to run the following flag in the program to exclude all reads mapping to rRNA, tRNA and such stuff
+"-M/mask-file <mask.(gtf/gff)>" ,  where the file thould be a reference to all tRNA and such!
