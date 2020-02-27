@@ -35,11 +35,18 @@ We will start by trying to align the reads to the reference genome that we downl
 ```{}
 bowtie2-build -f S288C_reference_sequence_R64-1-1_20110203.fsa bowtie_index/reference_genome
 ```
-We allign the RNA-seq to the the S288C reference genome using tophat (version 2.0.13).  Using the following command: 
+
+We aligned the RNA-seq to the the S288C reference genome using tophat (version 2.0.13).  Using the following command: 
 
 ```{}
 tophat -o alignment/dgln31 /reference_genome/bowtie_index/S288C raw_data/fasta_file_names/dgln31_1.fastq.gz raw_data/fasta_file_names/dgln31_2.fastq.gz
 ```
+
+Tophat is an alignment tool based on Bowtie that maps reads against a reference genome (provided as an argument in the command, in the form of index files created by bowtie in the previous step). In our case, we are giving the command pair-end reads that were produced in Illumina. 
+
+We get an output composed of several files, including an align summary that indicates we got a 92.4% concordant pair alignment rate.
+A concordanr pait alignment rate means that the reads provided are correct (read_1 in forward direction and read_2 in reverse) and that they have an insert size of 500bp.
+This is a high percentage, which is good because anything not included in a corcondant pair will not be used in further downstream analysis (which would mean that with a low rate here we would be loosing a lot of information in the analysis). We get a high number of multiple alignments (77.9%) which is quite a high number. An explanation for this might be that our reads are too short to have a unique alignment. Some multiple alignment is expected because a genome contains repeated regions and pseudogenes. Maybe it is also a consequence of not having performed any quality check on the data before the alignment.  
 
 
 
