@@ -5,6 +5,7 @@ samtools view *dgln31.bam | grep "1024" | less -S
 this gives 12700, very very small!
 samtools view -f 1024 *dgln31.bam | less -S
 
+
 the latter seems like a more reasonable one!
 Here we get the output 3779981
 
@@ -17,3 +18,24 @@ note that the output name test_cufflinks is not particularily clever, and also n
 
 " reading on the internet, it might be suitable to run the following flag in the program to exclude all reads mapping to rRNA, tRNA and such stuff
 "-M/mask-file <mask.(gtf/gff)>" ,  where the file thould be a reference to all tRNA and such!
+
+Recieved new sorted files from L to imprrve picardtools! 
+copied these files to each relevant directory from her folder by the following command: different path for different samples of course, just switch dgln3_iso* to something else.
+"  cp dgln3_isobutanol_2/marked_duplicates_removed.bam /home/student8/Project/data/alit/dgln3_isobutanol_2/sorted_marked_duplicates_removed.bam 
+
+ran cufflinks using this new command in the folder in alihnmnet named after corresponding sample. e.g
+
+"cufflinks -g <path-to-reference>.gff sorted_marked_duplicates.bam -o test_cufflinks" for the first sample
+
+the next step after running for the first strain is to somehow merge the transcripts annotation using either cuffmerge or cuffcompare
+
+the next step after running for the first strain is to somehow merge the transcripts annotation using either cuffmerge or cuffcompare!! also find some gtf file containing a ton of tRNA et cetera!
+
+I ran cuffmerge to get a unified gff file for the gln3 strain! it threw a huge error saying "couldn't find fasta record for '2-micron'!" 
+nevertheless, a merged.gtf file was produced which I presume is all that is gln3 strain! it threw a huge error saying "couldn't find fasta record for '2-micron'!" 
+nevertheless, a merged.gtf file was produced which I presume is all that is needed!
+
+the command i ran was:
+" cuffmerge -o cuffmerge_out_gln3 -g ~/Project/data/S288C_reference_genome_R64-1-1_20110203/*.gff -s ~/Project/data/S288C_reference_genome_R64-1-1_20110203/S288C_reference_sequence_R64-1-1_20110203.fsa.fai assemblies.txt
+
+note that this is in a new directory called "cuffmerge output". Also note the .fai extension to fsa file which i have no idea if it is different. the file was created when i ran cuffmerge and it crashed the fitst time 
