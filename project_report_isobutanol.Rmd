@@ -68,6 +68,50 @@ picard MarkDuplicates REMOVE_DUPLICATE=True I=accepted_hits.sorted.bam O= marked
 ```
 We removed the duplicates as indicated in the paper. However, it is important to consider that it is hard to be sure that this duplicates were all artificial (PCR or optical duplicates) and not a natural consequence of the high coverage of the sequencing experiment. 
 
+After removal of duplicates, the next step was to run cufflinks commands on all files to further step into using cuffmerge to get a combined gtf file.
+
+We ran cufflinks in the folder named for the particular replicate and condition, e.g dgl31  as follows:
+
+```{}
+cufflinks -g <path-to-reference>.gff sorted_marked_duplicates_removed.bam -o cufflinks_output"
+```
+This was run for all four files with the gene deletion strain. Thus, the output of this, cufflinks_output, became a new directory within the folder named after the sample. e.g it was stored in 
+data/alignmnets/dgln31/cufflinks_output. note that some of these direcotried are named cufflinks_result and not cufflinks_output
+
+The next thing to do was run cuffmerge to get a reference gtf.file for cuffdiff to use. 
+for this, i created a new directory called cuffmerge_work in the data directory. There i created a file of all the paths to the assembled genomes transcript.gtf files, meaning the output of cufflinks.
+
+i then ran this command to perform cuffmerges and produece a common gtffile.
+```{}
+cuffmerge -o cuffmerge_out_gln3 -g ~/Project/data/S288C_reference_genome_R64-1-1_20110203/*.gff -s ~/Project/data/S288C_reference_genome_R64-1-1_20110203/S288C_reference_sequence_R64-1-1_20110203.fsa assemblies.txt
+```
+Note that the program crashed almost immediately, saying that it couldnt find chromosomes in the fasta files and also gave warnings about not-found bam-files. this is strange since we supplied the same reference fsa file as we have used all the time and no bam file was rewuired for the program to run. 
+Nevertheless, a new gtf file called "merged.gtf" was produced by cuffmerge, and we decided to move onward with that file!
+
+The next step was to somehow create a maskfile in gtf file format which contained information about tRNA, rRNA and non-coding RNA transcripts found in the assembly, which should be ignored during differential expression analysis.
+Since there seemed to be no possible way of obtaining such a file from the internet, no more one in the same gtf format as the merged.gtf, we figured we should somehow identify from the original gff file with the gene annotation which transcripts and their locations in the genome should be ignored. We did this in the command line using grep and sed.
+The idea was: extract all IDs of the undesired transcripts from the reference genome. then query the merged.gtf file for these transcript IDs and create a file with all the lines of the gtf file which has these ids in it. These should then be ignored, i.e be called a maskfile in the cuffdiff program!
+
+```{}
+sed 's/;.*//' saccharomyces_cerevisiae_R64-1-1_20110208.gff | cut -f 3,9 | grep -e 'tRNA' -e 'rRNA' -e 'snoRNA' > masking_indices
+sed 's/[^=]*=//' masking_indices > only_IDS
+grep --file=only_IDS merged.gtf > mask_gln3.gtf 
+```  
+In this fashion, we got a mask_gln3.gtf file with al undersired alignments! took about 4 hours to come up with for 2 people....
+
+Next step was to run cuffdiff with all these files and assembled bam.files from tophat!
+
+We did this in again a new direcotry called cuffdiff_work where the relevant merge.gtf file along with maskfiles and all bam.files were copied to!
+The cuffdiff command we used was this
+```{}
+cuffdiff -M mask_gln3.gtf -b ../../data/S288C_reference_genome_R64-1-1_20110203/S288C_reference_sequence_R64-1-1_20110203.fsa -o diff_out_dgln3 -u merged.gtf -L C0,C13 dgln31_accepted_hits.bam,dgln32_accepted_hits.bam dgln3_isobutanol_1_accepted_hits.bam,dgln3_isobutanol_2_accepted_hits.bam 
+```
+Note that the output diff_out_dgln3 was very strange. All Fpkmvalues reported were zero corresponding to all the gene-ids from the reference genome. and cuffdiff did throw an error relating to the fsa-file, something about no chromosome found etc...
+
+Therefore, the next step is to try with another reference genome gtf to see if that works. ALso, the whole pipeline has to be run for the wildtype strain!
+
+
+
 
 
 
