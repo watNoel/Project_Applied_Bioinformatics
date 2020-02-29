@@ -48,10 +48,27 @@ We get an output composed of several files, including an align summary that indi
 A concordanr pait alignment rate means that the reads provided are correct (read_1 in forward direction and read_2 in reverse) and that they have an insert size of 500bp.
 This is a high percentage, which is good because anything not included in a corcondant pair will not be used in further downstream analysis (which would mean that with a low rate here we would be loosing a lot of information in the analysis). We get a high number of multiple alignments (77.9%) which is quite a high number. An explanation for this might be that our reads are too short to have a unique alignment. Some multiple alignment is expected because a genome contains repeated regions and pseudogenes. Maybe it is also a consequence of not having performed any quality check on the data before the alignment.  
 
+Now, we need to sort our alignment. For this we are going to use samtools, which has a 'sort' command that sorts alignments by lefmost coordinates.
+
+```{}
+samtools sort accepted_hits.bam -o accepted_hits.sorted.bam
+```
+
+
 We tried here to use the option -g and provide it with the annotation file .gff but we experienced some problems that we think are because our reference genome is from 2011 (since we are using the one they used for the paper) and the version of TopHats is recent and probably cannot manage the format of our .gff file. We decided to carry on because we should be able to incorporate the same information later on using Cufflinks. 
 
-We have to use samtools sort to sort the bam file before using picar tools, and then use picard tools with the option to remove the duplicates, using the option REMOVE_SEQUENSING_DUPLICATES(true). 
-After that we can run cufflinks with -g .gff file and see the output. Then we need to figure out how to remove tRNA and rRNA. After that we proceed with Cuffmerge and Cuffdiff. 
+We use "samtools sort" to sort the bam file before using PicardTools. Sorting will simply make PicardTools work faster. 
+```{}
+samtools sort dgln32/accepted_hits.bam -o dgln32/accepted_hits.sorted.bam
+```
+
+We use now PicardTools to remove the PCR duplicates. 
+```{}
+picard MarkDuplicates REMOVE_DUPLICATE=True I=accepted_hits.sorted.bam O= marked_duplicates_removed.bam M= marked_dup_metrics_removed.txt
+```
+We removed the duplicates as indicated in the paper. However, it is important to consider that it is hard to be sure that this duplicates were all artificial (PCR or optical duplicates) and not a natural consequence of the high coverage of the sequencing experiment. 
+
+
 
 
 
