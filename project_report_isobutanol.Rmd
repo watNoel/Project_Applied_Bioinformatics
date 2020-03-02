@@ -106,10 +106,26 @@ The cuffdiff command we used was this
 ```{}
 cuffdiff -M mask_gln3.gtf -b ../../data/S288C_reference_genome_R64-1-1_20110203/S288C_reference_sequence_R64-1-1_20110203.fsa -o diff_out_dgln3 -u merged.gtf -L C0,C13 dgln31_accepted_hits.bam,dgln32_accepted_hits.bam dgln3_isobutanol_1_accepted_hits.bam,dgln3_isobutanol_2_accepted_hits.bam 
 ```
-Note that the output diff_out_dgln3 was very strange. All Fpkmvalues reported were zero corresponding to all the gene-ids from the reference genome. and cuffdiff did throw an error relating to the fsa-file, something about no chromosome found etc...
+Note that the output diff_out_dgln3 was very strange. All FPKM values reported were zero corresponding to all the gene-ids from the reference genome. and cuffdiff did throw an error relating to the fsa-file, something about no chromosome found etc...
 
 Therefore, the next step is to try with another reference genome gtf to see if that works. ALso, the whole pipeline has to be run for the wildtype strain!
 
+Some info about cuffdiff: Cuffdiff provides different output files. We are interested in the differential expression tests (files with extension .diff). Specifically, we look into the file gene_exp.diff This file contains the values for gene-level differential expression. It tests differences in the summed FPKM of transcripts sharing each gene_id (http://cole-trapnell-lab.github.io/cufflinks/cuffdiff/). The .diff files contain several parameters of which we are specially interested in p: p-value (uncorrected) of the test statistic; q: FDR-adjusted p-value of the test statistic; and whether the differential expression is significant or not. 
+
+For the visualization and analysis of the results, we are also interested in the function of the genes that are differentially expressed. To do this, we first extracted all the differentially expressed genes from the file gene_exp.diff corresponding to the differential expression analysis for the WT strain both in isobutanol and in normal conditions. 
+
+```{}
+grep "yes" gene_exp.diff | cut -f 3 > DE_genes_goterms.txt
+```
+
+And we use the txt file as input for the Gene Ontology Term Finder provided by Saccharomyces Genome Database (SGD, https://www.yeastgenome.org/goTermFinder). 
+Note: some gene names in our txt were associated to multiple genes, so the Gene Ontology Finder asked us to substitute them for the systematic name. This was done using sed in bash: 
+
+```{}
+sed -i '' 's/CTR1/YPR124W/g' DE_genes_goterms.txt
+```
+
+After this, we obtained an association of gene ontology for each of our differentially expressed genes. 
 
 
 
