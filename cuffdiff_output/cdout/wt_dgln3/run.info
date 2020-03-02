@@ -1,5 +1,0 @@
-param	value
-cmd_line	cuffdiff -M mask_gln3.gtf -b ../../new_data/Saccharomyces_cerevisiae.EF4.67.dna.toplevel.fa -o cdout/wt_dgln3/ -u cmout/merged.gtf -L NI,I ../tophat_out/wt_isobutanol_R1/accepted_hits_sorted_markduplicates.bam,../tophat_out/wt_isobutanol_R2/accepted_hits_sorted_markduplicates.bam ../tophat_out/dgln3_isobutanol_R1/accepted_hits_sorted_markduplicates.bam,../tophat_out/dgln3_isobutanol_R2/accepted_hits_sorted_markduplicates.bam 
-version	2.2.1
-SVN_revision	4237
-boost_version	104700
