@@ -1,0 +1,5 @@
+file	condition	replicate_num	total_mass	norm_mass	internal_scale	external_scale
+../tophat_out/wt_isobutanol_R1/accepted_hits_sorted_markduplicates.bam	NI	0	881095	1.05179e+06	0.849837	1
+../tophat_out/wt_isobutanol_R2/accepted_hits_sorted_markduplicates.bam	NI	1	976046	1.05179e+06	1.22164	1
+../tophat_out/dgln3_isobutanol_R1/accepted_hits_sorted_markduplicates.bam	I	0	891661	1.05179e+06	0.475947	1
+../tophat_out/dgln3_isobutanol_R2/accepted_hits_sorted_markduplicates.bam	I	1	1.07331e+06	1.05179e+06	2.15176	1
