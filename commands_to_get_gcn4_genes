@@ -1,0 +1,8 @@
+# first cut out just the gene names, both from the list of all differentially expressed genes and the associated ones,
+# taken from yeastgenome.org. Then find all common names and store in some relevant file!
+
+cut -f 3 ../cds_exp_diff_wt | sed 1d | less -S | sort > all_found_genes_sorted
+
+cut -f 2 GCN4_targets.txt | tail -n +10 | sort > GCN4_targets_sorted
+
+ comm -12 all_found_genes_sorted GCN4_targets_sorted > GCN4_targets_in_diff_exp_output  
