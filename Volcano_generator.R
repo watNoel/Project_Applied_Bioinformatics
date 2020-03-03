@@ -42,24 +42,30 @@ for (i in 1:length(diff_expr_and_goterms$gene)){
 
 
 keyvals= ifelse(diff_expr_and_goterms$GOterm =="fungal-type cell wall organization or biogenesis",
-                'black',ifelse(diff_expr_and_goterms$GOterm == "cellular amino acid metabolic process",
+                'green',ifelse(diff_expr_and_goterms$GOterm == "cellular amino acid metabolic process",
                        'red', ifelse(diff_expr_and_goterms$GOterm== "glycolytic process",
-                                       'royalblue','grey')
+                                       'blue','grey')
                               )
                )  
                   
            
 
 names(keyvals)[keyvals == 'grey'] <- 'everything else'
-names(keyvals)[keyvals == 'black'] <- 'fungal-type cell wall organization or biogenesis'
+names(keyvals)[keyvals == 'green'] <- 'fungal-type cell wall organization or biogenesis'
 names(keyvals)[keyvals == 'red'] <- 'cellular amino acid metabolic process'
-names(keyvals)[keyvals == 'royalblue'] <- 'glycolytic process'
+names(keyvals)[keyvals == 'blue'] <- 'glycolytic process'
                
 diff_expr_and_goterms$value_1=diff_expr_and_goterms$value_1+1
 diff_expr_and_goterms$value_2=diff_expr_and_goterms$value_2+1
 diff_expr_and_goterms$adj_log2fold= log2(diff_expr_and_goterms$value_2/diff_expr_and_goterms$value_1)
 
 
+GCN4_genes <- read_lines("./GCN4/GCN4_targets_in_diff_exp_output")
+
+keyvals.shape <- ifelse(diff_expr_and_goterms$gene %in% GCN4_genes, 17, 1)
+
+names(keyvals.shape)[keyvals.shape==17] = 'GCN4-associated genes'
+names(keyvals.shape)[keyvals.shape==1] = ''
 
 EnhancedVolcano(diff_expr_and_goterms,
                 lab = diff_expr_and_goterms$gene,
@@ -71,7 +77,8 @@ EnhancedVolcano(diff_expr_and_goterms,
                 # xlab = bquote(~Log[2]~ 'fold change'),
                 pCutoff = 0.05,
                 FCcutoff = 1,
-                colCustom = keyvals
+                colCustom = keyvals,
+                shapeCustom = keyvals.shape
 )
 
 
