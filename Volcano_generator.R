@@ -16,7 +16,6 @@ library(forcats)
 
 
 
-
 library(tidyverse)
 
 diff_expr <- read.csv(file="cds_exp_diff_wt", sep= '\t')
@@ -41,31 +40,45 @@ for (i in 1:length(diff_expr_and_goterms$gene)){
 }
 
 
+
+#### ------------ This segment gives the custom categories of genes
 keyvals= ifelse(diff_expr_and_goterms$GOterm =="fungal-type cell wall organization or biogenesis",
-                'green',ifelse(diff_expr_and_goterms$GOterm == "cellular amino acid metabolic process",
-                       'red', ifelse(diff_expr_and_goterms$GOterm== "glycolytic process",
-                                       'blue','grey')
+                'darkgreen',ifelse(diff_expr_and_goterms$GOterm == "cellular amino acid metabolic process",
+                       'firebrick3', ifelse(diff_expr_and_goterms$GOterm== "glycolytic process",
+                                       'darkmagenta','gray87')
                               )
                )  
                   
-           
+names(keyvals)[keyvals == 'gray87'] <- 'everything else'
+names(keyvals)[keyvals == 'darkgreen'] <- 'cell wall organization or biogenesis'
+names(keyvals)[keyvals == 'firebrick3'] <- 'cellular amino acid metabolic process'
+names(keyvals)[keyvals == 'darkmagenta'] <- 'glycolytic process'
 
-names(keyvals)[keyvals == 'grey'] <- 'everything else'
-names(keyvals)[keyvals == 'green'] <- 'fungal-type cell wall organization or biogenesis'
-names(keyvals)[keyvals == 'red'] <- 'cellular amino acid metabolic process'
-names(keyvals)[keyvals == 'blue'] <- 'glycolytic process'
-               
+
+
+###3 --- this segment gives the cutom shape for specific GCN4-target genes
+# requires input file which ONLY consists of a list of the relevant gene-names. 
+# this list was aquired by a´taking all the common entries in the lists of genes from cuffdiff
+# and https://www.yeastgenome.org/locus/GCN4/regulation under gene targets.  
+
+GCN4_genes <- read_lines("./GCN4/GCN4_targets_in_diff_exp_output")
+
+keyvals.shape <- ifelse( diff_expr_and_goterms$gene %in% GCN4_genes, 17,19) # is triangle
+
+names(keyvals.shape)[keyvals.shape==17] = 'GCN4-associated genes'
+names(keyvals.shape)[keyvals.shape==19] = ''
+
+            
+
+
+####--------- Finally, I add 1 to each value and calculate log-foldchanges to avoid infinite changes   
+
 diff_expr_and_goterms$value_1=diff_expr_and_goterms$value_1+1
 diff_expr_and_goterms$value_2=diff_expr_and_goterms$value_2+1
 diff_expr_and_goterms$adj_log2fold= log2(diff_expr_and_goterms$value_2/diff_expr_and_goterms$value_1)
 
 
-GCN4_genes <- read_lines("./GCN4/GCN4_targets_in_diff_exp_output")
 
-keyvals.shape <- ifelse(diff_expr_and_goterms$gene %in% GCN4_genes, 17, 1)
-
-names(keyvals.shape)[keyvals.shape==17] = 'GCN4-associated genes'
-names(keyvals.shape)[keyvals.shape==1] = ''
 
 EnhancedVolcano(diff_expr_and_goterms,
                 lab = diff_expr_and_goterms$gene,
@@ -78,14 +91,18 @@ EnhancedVolcano(diff_expr_and_goterms,
                 pCutoff = 0.05,
                 FCcutoff = 1,
                 colCustom = keyvals,
-                shapeCustom = keyvals.shape
+                shapeCustom = keyvals.shape,
+                title = 'WT  (1.3% Isobutanol)  compared to WT (0% Isobutanol)',
+                legendPosition = 'right',
+                legendIconSize = 5.0,
+                legendLabSize = 8,
+                axisLabSize = 14
 )
 
 
 
 
-
-# From here it does not seem to work, old code ----------------------------
+# From here it does not work, old code ----------------------------
 
 
 
