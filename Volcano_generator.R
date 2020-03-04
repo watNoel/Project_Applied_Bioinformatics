@@ -1,24 +1,24 @@
-#if (!requireNamespace('BiocManager', quietly = TRUE))
-#  install.packages('BiocManager')
-#
-#BiocManager::install('EnhancedVolcano')
 
-#install.packages("farver")
 library(ggrepel)
 library(EnhancedVolcano)
 library(farver)
 library(forcats)
-## begin by importing the file into R as a data.frame
-
-
-
-# experimental stuff, but it works! ------------------------------------------------------
-
-
-
 library(tidyverse)
 
-diff_expr <- read.csv(file="cds_exp_diff_wt", sep= '\t')
+# The required files are 3, a file with the GCN4 genes in a newline separated list,
+#and the output file cds_exp.diff from cuffdiff, 
+# and a file with associated GO-terms. Note that the script is highly specific to the format of these files
+# in the manipulation of the tables to combine the GO-term association with the differential-expression analysis
+# for example, note that the Go-term association file is assumed to be separated by ", ", a comma+space 
+
+
+
+###-----  TO GET THE TWO SEPARATE PLOTS, Change the filename in read.csv*       ###
+###-----  AND change the name of the TITLE in the arguments to EnhancedVolcano. ###
+
+#diff_expr <- read.csv(file="cds_exp_diff_wt", sep= '\t') for wildtype vs wildtype
+diff_expr <- read.csv(file="exp_diff_genes_wt_vs_deletion", sep= '\t')
+
 GOterm_enrichment <- read.csv("association_for_volcano_plot.txt", sep="\t", header= 0) %>%
   as.tibble() %>% 
   mutate(gene= strsplit(as.character(V11),", ")) %>% 
@@ -31,6 +31,8 @@ diff_expr %>% mutate( gene = as.character(gene))
 , by = "gene" 
   ) %>% rename(GOterm=V2)
 
+
+# this is some shady loop to introuce the "everything else label"
 levels(diff_expr_and_goterms$GOterm)=c(levels(diff_expr_and_goterms$GOterm),"Everything else")
 
 for (i in 1:length(diff_expr_and_goterms$gene)){
@@ -92,7 +94,8 @@ EnhancedVolcano(diff_expr_and_goterms,
                 FCcutoff = 1,
                 colCustom = keyvals,
                 shapeCustom = keyvals.shape,
-                title = 'WT  (1.3% Isobutanol)  compared to WT (0% Isobutanol)',
+                #title = 'WT  (1.3% Isobutanol)  compared to WT (0% Isobutanol)', # for WtvsWT
+                title = 'DGLN3  (1.3% Isobutanol)  compared to WT  (1.3% Isobutanol)',
                 legendPosition = 'right',
                 legendIconSize = 5.0,
                 legendLabSize = 8,
@@ -100,20 +103,17 @@ EnhancedVolcano(diff_expr_and_goterms,
 )
 
 
+###
+
+
+
+
+
 
 
 # From here it does not work, old code ----------------------------
-
-
-
-
-
 #GOterm_enrichment_tsv <- read_tsv("association_for_volcano_plot.txt", colnames= FALS)
-
-
-
 #Go_terms <- read.table(file="only_genes.txt",header = 0)
-
 
 diff_expr <- read.csv(file="wt_diff_gene_expression_with_GO.csv", sep= ',')
 diff_expr <- read.csv(file="cds_exp_diff_wt", sep= '\t')
