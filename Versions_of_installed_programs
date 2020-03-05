@@ -1,0 +1,11 @@
+We entered our environment by "source activate student8"
+
+installed tophat version 2.0.13
+as " conda install -c bioconda tophat=2.0.13
+
+installed cufflinks as "conda install cufflinks",
+it seems conda install -c bioconda cufflinks does the same thing,
+
+installed picard as conda install -c bioconda picard=1.126 
+
+A complete list of programs in the environment is supplied below:
