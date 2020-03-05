@@ -8,7 +8,7 @@ library(tidyverse)
 # The required files are 3, a file with the GCN4 genes in a newline separated list,
 #and the output file cds_exp.diff from cuffdiff, 
 # and a file with associated GO-terms. Note that the script is highly specific to the format of these files
-# in the manipulation of the tables to combine the GO-term association with the differential-expression analysis
+# due to the manipulation of the tables to combine the GO-term association with the differential-expression analysis
 # for example, note that the Go-term association file is assumed to be separated by ", ", a comma+space 
 
 
