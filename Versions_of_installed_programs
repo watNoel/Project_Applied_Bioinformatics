@@ -9,3 +9,31 @@ it seems conda install -c bioconda cufflinks does the same thing,
 installed picard as conda install -c bioconda picard=1.126 
 
 A complete list of programs in the environment is supplied below:
+# packages in environment at /opt/miniconda/envs/student8:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                 conda_forge    conda-forge
+_openmp_mutex             4.5                       0_gnu    conda-forge
+bowtie2                   2.2.5            py27h6bb024c_5    bioconda
+ca-certificates           2019.11.28           hecc5488_0    conda-forge
+certifi                   2019.11.28               py27_0    conda-forge
+cufflinks                 2.2.1                    py27_2    bioconda
+java-jdk                  8.0.112                       1    bioconda
+libffi                    3.2.1             he1b5a44_1006    conda-forge
+libgcc-ng                 9.2.0                h24d8f2e_2    conda-forge
+libgomp                   9.2.0                h24d8f2e_2    conda-forge
+libstdcxx-ng              9.2.0                hdf63c60_2    conda-forge
+ncurses                   6.1               hf484d3e_1002    conda-forge
+openjdk                   8.0.112          zulu8.19.0.1_3    conda-forge
+openssl                   1.1.1d               h516909a_0    conda-forge
+perl                      5.26.2            h516909a_1006    conda-forge
+picard                    1.126                         5    bioconda
+pip                       20.0.2                     py_2    conda-forge
+python                    2.7.15            h5a48372_1009    conda-forge
+readline                  8.0                  hf8c457e_0    conda-forge
+setuptools                44.0.0                   py27_0    conda-forge
+sqlite                    3.30.1               hcee41ef_0    conda-forge
+tk                        8.6.10               hed695b0_0    conda-forge
+tophat                    2.0.13                   py27_4    bioconda
+wheel                     0.34.2                     py_1    conda-forge
+zlib                      1.2.11            h516909a_1006    conda-forge
