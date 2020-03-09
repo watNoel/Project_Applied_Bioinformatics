@@ -1,0 +1,22 @@
+# We began with the output from the cufflinks-picard_etc_pipeline for comparison of Wilttype vs Wildtype in 1.3% Isobutanol
+
+# from that we ran the following command to extract only differentially expressed genes, 
+# decided based on the predefeinded cutoff value of 0.05 for FDR adjusted p-values!
+
+grep "yes" gene_exp.diff | cut -f 3 > DE_genes_goterms.txt 
+
+#And we use the txt file as input for the Gene Ontology Term Finder provided by Saccharomyces Genome Database (SGD, https://www.yeastgenome.org/goTermFinder).
+#Note: some gene names in our txt were associated to multiple genes, so the Gene Ontology Finder asked us to substitute them for the systematic name. This was done using sed in bash:
+# note we just found 5 of these, so we xwithced them manually
+sed -i '' 's/CTR1/YPR124W/g' DE_genes_goterms.txt
+
+# This is now a file of association of gene ontology of all our differentially expressed genes in the wild type strain. The same GO-terms were later associated to the wild_type_vs_deletion volcanoplot
+# on https://www.yeastgenome.org/goTermFinder, we supplied the list of genes and selected "Process" as that is what the authors did. 
+
+#the output file was imported and called
+GO_terms_association_process.txt" 
+
+#from this file, we grepped for the specific terms the authors chose to keep and stored in the 
+
+"association_for_volcano_plot.txt" #file, which is supplied here and used in the generation of volcano plots.
+

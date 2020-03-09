@@ -1,0 +1,79 @@
+#here we provide the pipeline from downloading data to getting results in cuffdiff.
+# Note the code is not runnable, since it requires correct setup of directories, but the principles should hold
+# also, I do not show the code for getting all analyses, but rather the crucial steps we used multiple times for various data files.
+
+### EVERYTHING IS IN BASH, MANY COMMANDS FOUND ON http://cole-trapnell-lab.github.io/cufflinks/manual/ and  https://ccb.jhu.edu/software/tophat/manual.shtml but most on forums such as biostars, github or youtube as the documentation is rather vague bu many courses teach it
+
+# Begin by downloading the correct genomes from the referenced page and the reference genome (note not the same as in article as discussed in report due to gtf/gff issues) 
+
+# The sequencing data!
+wget https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-8175/E-MTAB-8175.sdrf.txt
+#less -S E-MTAB-8175.sdrf.txt
+cat E-MTAB-8175.sdrf.txt | cut -f35 | tail -n +2 > links2download.txt #extracting the links to download the FASTq files
+wget -N -i links2download.txt #download FASTq files
+
+# The reference! note the ftp: in begining might have to be changed to https or something, check on the web by searching for ftp.ensembl.org:21/pub/release-67/fasta/saccharomyces_cerevisiae
+wget ftp://ftp.ensembl.org:21/pub/release-67/fasta/saccharomyces_cerevisiae/ \
+dna/Saccharomyces_cerevisiae.EF4.67.dna.toplevel.fa.gz
+wget ftp://ftp.ensembl.org:21/pub/release-99/gtf/saccharomyces_cerevisiae/ \
+Saccharomyces_cerevisiae.R64-1-1.99.gtf.gz
+
+#To understand better the context of the data, the samples are divided in wild-type (WT) strains and #GLN3∆ (gln3) strains. For each genotype, we get two samples growing in normal conditions and two #samples growing in 1,3% v/v isobutanol. Also, the reads were paired end- so each culture yielded 2 #FASTq-files, thus there are 16 of them.
+
+# The next step is alignment of these paired end samples to the reference, done using tophat.
+# tophat requires an index file of the reference, produced by bowtie as follows:
+
+bowtie2-build -f <PATH-TO-REFERENCE> > bowtie_index/reference_genome 
+
+# in our case, <PATH-TO-REFERENCE> was ../new_data/Saccharomyces_cerevisiae.EF4.67.dna.toplevel.fa 
+
+# The alignment was also supported by an annotated gtf file (which caused a lot of trouble)
+# That file came with the reference genome and requires the -G flag. An example alignmnet script is here:
+
+tophat -G ../../new_data/Saccharomyces_cerevisiae.R64-1-1.99.gtf -o dgln3_R1/  ../bowtie_index/reference_genome ../fasta_file_names/dgln31_1.fastq ../fasta_file_names/dgln31_2.fastq 
+
+# Importantly, the ouput is the dgln3_R1 folder in this case, and the two last arguments are a pair of paired end read fastqfiles. 
+# This was done 8 times to all 8 pairs to produce 8 alignment results. 
+#The most important output were the files named "accepted_hits.bam" used further on.
+
+# The next step was to identify pcr or sequencing duplicates i.e artifacts of the sequencing technology, and mark or remove them from the alignmnet data. 
+#For this, we used picardtools after we sorted the bam file output from tophat
+#MarkDuplicates command as follows:
+
+samtools sort accepted_hits.bam -o accepted_hits.sorted.bam
+picard MarkDuplicates I=accepted_hits_sorted.bam \O=accepted_hits_sorted_removed_duplicates.bam M=marked_dup_metrics.txt
+
+# The new .bam files accepted_hits_sorted_removed_duplicates.bam were those used in the next step
+# using cufflinks!
+cufflinks -g <PATH-TO-REFERECE>.gtf -o dgln3_R1_clout/ accepted_hits_sorted_removed_duplicates.bam 
+
+# in this case, the output of alignment on deletion atrain replicate 1 was stored in dgln3_R1_clout/. 
+# The ouput of cufflinks that was further used was the transcripts.gtf file. However, genes.fpkm_tracking can give a good view id the alignmnet has been successful.
+
+#The next step was to create a merged reference transcriptome from the cufflinks output, usnig cuffmerge. We made two, one for each upcoming differential gene expression analysis.
+#Cuffmerge required a txt file with paths to all transgripts.gtf files given from cufflinks
+# it could look e.g like this for the wildtype 0 vs 1.3% analysiss, called 
+"assemblies.txt"
+less -S assemblies.txt
+./wt_R1_clout/transcripts.gtf
+./wt_R2_clout/transcripts.gtf                           
+./wt_isobutanol_R1_clout/transcripts.gtf
+./wt_isobutanol_R2_clout/transcripts.gtf
+
+#The merge was performed via the following command and stored in cmout/
+ 
+cuffmerge -g <PATH-TO-REFERENCE-gtf-file> -s <PATH-TO-REFERENCE-fasta-file> -p 8 -o cmout/ assemblies.txt
+
+#IMPORTANT NOTE! CUFFMERGE DID NOT SEEM TO WORK PROPERLY; AS IT TERMINATED AFTER ONLY A SHORT TIME WHILE IT SHOULD TAKE LONGER TIME THAN EVERYING ELSE, ACCORDING TO THE DOCUMENTATION
+# HOWEVER, IT DID PRODUCE THE DESIRED MERGED GTF.FILE WE THINK, WEHREFORE WE JUST WENT ON WITH IT!
+
+# NOW the next step was to produce a maskfile, something decribed in another file called Creation_of_maskfile.
+# importantly, the output of that is a file with undesirable trnascripts for diff_expression analysis. it's called mask_gln3.gtf and used in the cuffdiff command below:
+# TO GET diff_expression results, we ran
+
+cuffdiff -M mask_gln3.gtf -o diff_out_wt -u merged.gtf ../wt1/accepted_hits.bam,../wt2/accepted_hits.bam ../wt_isobutanol_1/accepted_hits.bam,../wt_isobutanol_2/accepted_hits.bam
+
+The input is the maskfile , then the output directory via -o, then the files for one condition in comma separated lists , and also the merged.gtf from cuffmerge via -u. 
+
+# An important note is that there were a ton of output files frm this analysis, we mainly considered cds_exp.diff file which contain all the differential expression analysis!
+

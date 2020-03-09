@@ -1,0 +1,12 @@
+# first cut out just the gene names, both from the list of all differentially expressed genes and the associated ones,
+# taken from yeastgenome.org on the page related to GCN4..Then find all common names and store in some relevant file, 
+#that can be directly used for deciding the shape in RenhancedVolcano in R. 
+
+# this first command gets all gene names found from cuffdiffs differential expression of gene analysis output. note the path changes for different cuffdiff outputs.
+cut -f 3 ../cds_exp_diff_wt | sed 1d | less -S | sort > all_found_genes_sorted
+# this command trims the downloaded fils from yeastgenome.org which has all GCN4 targets known at the time with their annotation, which we discard.
+cut -f 2 GCN4_targets.txt | tail -n +10 | sort > GCN4_targets_sorted
+# this takes the common entries in the two produced files. 
+comm -12 all_found_genes_sorted GCN4_targets_sorted > GCN4_targets_in_diff_exp_output 
+
+#Why all this trouble of using comm -12 and cds_exp.diff? Well, we can not label things in cEnhancedVolcano that do not occur in the differential expression output. 
