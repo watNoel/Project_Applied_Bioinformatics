@@ -1,4 +1,4 @@
-#Here we provide the pipeline from downloading data to getting results in cuffdiff.
+#here we provide the pipeline from downloading data to getting results in cuffdiff.
 # Note the code is not runnable, since it requires correct setup of directories, but the principles should hold
 # also, I do not show the code for getting all analyses, but rather the crucial steps we used multiple times for various data files.
 
@@ -12,7 +12,7 @@ wget https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-8175/E-MTAB-8175.sdrf.txt
 cat E-MTAB-8175.sdrf.txt | cut -f35 | tail -n +2 > links2download.txt #extracting the links to download the FASTq files
 wget -N -i links2download.txt #download FASTq files
 
-# The reference! 
+# The reference! note the ftp: in begining might have to be changed to https or something, check on the web by searching for ftp.ensembl.org:21/pub/release-67/fasta/saccharomyces_cerevisiae
 wget ftp://ftp.ensembl.org:21/pub/release-67/fasta/saccharomyces_cerevisiae/ \
 dna/Saccharomyces_cerevisiae.EF4.67.dna.toplevel.fa.gz
 wget ftp://ftp.ensembl.org:21/pub/release-99/gtf/saccharomyces_cerevisiae/ \
@@ -67,4 +67,13 @@ cuffmerge -g <PATH-TO-REFERENCE-gtf-file> -s <PATH-TO-REFERENCE-fasta-file> -p 8
 #IMPORTANT NOTE! CUFFMERGE DID NOT SEEM TO WORK PROPERLY; AS IT TERMINATED AFTER ONLY A SHORT TIME WHILE IT SHOULD TAKE LONGER TIME THAN EVERYING ELSE, ACCORDING TO THE DOCUMENTATION
 # HOWEVER, IT DID PRODUCE THE DESIRED MERGED GTF.FILE WE THINK, WEHREFORE WE JUST WENT ON WITH IT!
 
+# NOW the next step was to produce a maskfile, something decribed in another file called Creation_of_maskfile.
+# importantly, the output of that is a file with undesirable trnascripts for diff_expression analysis. it's called mask_gln3.gtf and used in the cuffdiff command below:
+# TO GET diff_expression results, we ran
+
+cuffdiff -M mask_gln3.gtf -o diff_out_wt -u merged.gtf ../wt1/accepted_hits.bam,../wt2/accepted_hits.bam ../wt_isobutanol_1/accepted_hits.bam,../wt_isobutanol_2/accepted_hits.bam
+
+The input is the maskfile , then the output directory via -o, then the files for one condition in comma separated lists , and also the merged.gtf from cuffmerge via -u. 
+
+# An important note is that there were a ton of output files frm this analysis, we mainly considered cds_exp.diff file which contain all the differential expression analysis!
 

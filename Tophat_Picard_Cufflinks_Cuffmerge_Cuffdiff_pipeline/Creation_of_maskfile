@@ -1,0 +1,19 @@
+To create the maskfile, we made use of the original reference genome gtf file, along with the merged gtf from thw wild type vs wild type strain
+# The idea was to extract all the genes associated with unwanted types of RNA from the file so as to not make these disturb the cuffdiff analysis
+# THe principle was as follows:
+
+sed 's/;.*//' saccharomyces_cerevisiae_R64-1-1_20110208.gff | cut -f 3,9 | grep -e 'tRNA' -e 'rRNA' -e 'snoRNA' > masking_indicesextracts ID:s 
+
+sed 's/[^=]*=//' masking_indices > only_IDS
+
+grep --file=only_IDS merged.gtf > mask_gln3.gtf
+
+#NOTE THAT FOR THE DIFFERENT reference genome in gtf, format, we employed another way to extract the relevant ids. the gene types were not foun in column 3 but in one of the ; separated text_entries called gene_biotype
+
+# the approprtiate first and second command was then a bit convoluted but it works 
+
+cut -f 9 Saccharomyces_cerevisiae.R64-1-1.99.gtf | cut -f 1,4 --delimiter=";" | grep -e "snoRNA" -e "rRNA" -e "tRNA" | cut -f 1 --delimiter=";" > masking_indices 
+cut -f 2 -d ' ' masking_indices | sed 's/"//g' > only_IDS
+grep --file=only_IDS merged.gtf > mask_gln3.gtf
+#One important note is that we get the exacts same amount of masked entries, regardless of which reverence we used and which method I used to create the maskfiles, strengthening the validity of this method for constructing the file!
+
